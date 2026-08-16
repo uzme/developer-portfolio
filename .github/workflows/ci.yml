@@ -1,0 +1,27 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Validate profile documentation
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Validate README
+        shell: bash
+        run: |
+          test -s README.md
+          grep -q "Second Brain" README.md
+          grep -q "Manus ChatGPT Bridge" README.md
+          grep -q "Telegram" README.md
