@@ -14,8 +14,8 @@ I build practical software at the intersection of **artificial intelligence, web
 
 | Project | Description | Stack |
 |---|---|---|
-| [Second Brain](https://github.com/Bahromjon2004/second-brain) | Personal AI memory, knowledge base, RAG, chat, and controlled agent platform. | Next.js · React · TypeScript · Supabase |
-| [Manus ChatGPT Bridge](https://github.com/Bahromjon2004/manus-chatgpt-bridge) | MCP/HTTP bridge for connecting AI clients to the Manus task API. | TypeScript · MCP · Zod · Vercel |
+| [Second Brain](https://github.com/uzme/second-brain) | Personal AI memory, knowledge base, RAG, chat, and controlled agent platform. | Next.js · React · TypeScript · Supabase |
+| [Manus ChatGPT Bridge](https://github.com/uzme/manus-chatgpt-bridge) | MCP/HTTP bridge for connecting AI clients to the Manus task API. | TypeScript · MCP · Zod · Vercel |
 
 ## Technical interests
 
