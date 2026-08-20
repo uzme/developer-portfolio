@@ -43,3 +43,15 @@ jobs:
 
       - name: Run unit tests
         run: python -m unittest discover -s tests -p "test_*.py" -v
+
+      - name: Guard tracked credentials
+        shell: bash
+        run: |
+          if git ls-files | grep -E '(^|/)(\.env|\.env\..*|id_rsa|id_ed25519)$'; then
+            echo "Sensitive filename is tracked" >&2
+            exit 1
+          fi
+          if git grep -nE -- 'gh[pousr]_[A-Za-z0-9_]{20,}|-----BEGIN (RSA |EC |OPENSSH )?PRIVATE KEY-----' -- ':!python_tools/repository_security_auditor/auditor.py'; then
+            echo "Credential-like pattern detected" >&2
+            exit 1
+          fi

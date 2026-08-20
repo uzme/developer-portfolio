@@ -14,13 +14,15 @@ I build practical software at the intersection of **artificial intelligence, web
 
 | Project | Description | Stack |
 |---|---|---|
-| [Second Brain](https://github.com/uzme/second-brain) | Personal AI memory, knowledge base, RAG, chat, and controlled agent platform. | Next.js · React · TypeScript · Supabase |
-| [Manus ChatGPT Bridge](https://github.com/uzme/manus-chatgpt-bridge) | MCP/HTTP bridge for connecting AI clients to the Manus task API. | TypeScript · MCP · Zod · Vercel |
-| [Python Webhook Validator](./python_tools/webhook_validator/README.md) | Dependency-free GitHub webhook signature validation utility with constant-time HMAC checks. | Python · HMAC · GitHub Webhooks |
+| Second Brain *(private project)* | Personal AI memory, knowledge base, RAG, chat, and controlled agent platform. | Next.js · React · TypeScript · Supabase |
+| Manus ChatGPT Bridge *(private project)* | MCP/HTTP bridge for connecting AI clients to the Manus task API. | TypeScript · MCP · Zod · Vercel |
+| [Portfolio Automation Toolkit](./python_tools/README.md) | Python utilities for webhook validation, README link checks, repository security audits, API health, changelogs, dependency reports, project statistics, image optimization, environment checks, and AI input validation. | Python · HMAC · HTTP · Security · Automation |
+
+[![Python CI](https://github.com/uzme/developer-portfolio/actions/workflows/python-ci.yml/badge.svg)](https://github.com/uzme/developer-portfolio/actions/workflows/python-ci.yml)
 
 ## Technical interests
 
-`TypeScript` `Python` `React` `Next.js` `Node.js` `REST APIs` `MCP` `Supabase` `PostgreSQL` `Authentication` `RAG` `AI Agents` `Responsive UI`
+`TypeScript` `Python` `React` `Next.js` `Node.js` `REST APIs` `MCP` `Supabase` `PostgreSQL` `Authentication` `RAG` `AI Agents` `Security Automation` `Responsive UI`
 
 ## Development principles
 
@@ -28,7 +30,7 @@ I value **useful products over unnecessary complexity**, secure handling of cred
 
 ## Contact
 
-For collaboration, product ideas, or technical conversations, reach me on [Telegram](https://t.me/MengliyevBahrom).
+For collaboration, product ideas, or technical conversations, reach me through Telegram: `@MengliyevBahrom`.
 
 ---
 
