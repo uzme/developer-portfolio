@@ -1,0 +1,15 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "bahromjon-webhook-validator"
+version = "0.1.0"
+description = "Small, secure GitHub webhook signature validation helpers."
+readme = "python_tools/webhook_validator/README.md"
+requires-python = ">=3.11"
+authors = [{ name = "Bahromjon Mengliyev" }]
+license = { text = "MIT" }
+
+[tool.setuptools.packages.find]
+include = ["python_tools*"]

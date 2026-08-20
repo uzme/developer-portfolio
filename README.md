@@ -16,10 +16,11 @@ I build practical software at the intersection of **artificial intelligence, web
 |---|---|---|
 | [Second Brain](https://github.com/uzme/second-brain) | Personal AI memory, knowledge base, RAG, chat, and controlled agent platform. | Next.js · React · TypeScript · Supabase |
 | [Manus ChatGPT Bridge](https://github.com/uzme/manus-chatgpt-bridge) | MCP/HTTP bridge for connecting AI clients to the Manus task API. | TypeScript · MCP · Zod · Vercel |
+| [Python Webhook Validator](./python_tools/webhook_validator/README.md) | Dependency-free GitHub webhook signature validation utility with constant-time HMAC checks. | Python · HMAC · GitHub Webhooks |
 
 ## Technical interests
 
-`TypeScript` `React` `Next.js` `Node.js` `REST APIs` `MCP` `Supabase` `PostgreSQL` `Authentication` `RAG` `AI Agents` `Responsive UI`
+`TypeScript` `Python` `React` `Next.js` `Node.js` `REST APIs` `MCP` `Supabase` `PostgreSQL` `Authentication` `RAG` `AI Agents` `Responsive UI`
 
 ## Development principles
 
