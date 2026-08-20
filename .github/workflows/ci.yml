@@ -17,7 +17,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Validate README
         shell: bash
@@ -26,3 +26,6 @@ jobs:
           grep -q "Second Brain" README.md
           grep -q "Manus ChatGPT Bridge" README.md
           grep -q "Telegram" README.md
+          test -s LICENSE
+          test -s SECURITY.md
+          test -s CONTRIBUTING.md
