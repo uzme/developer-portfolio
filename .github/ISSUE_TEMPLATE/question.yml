@@ -1,0 +1,17 @@
+name: Question
+description: Loyiha, kod yoki foydalanish bo‘yicha savol bering.
+title: "[Question]: "
+labels: [question]
+body:
+  - type: textarea
+    id: question
+    attributes:
+      label: Savolingiz
+      description: Savolni va tegishli kontekstni aniq yozing.
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Nimalarni sinab ko‘rdingiz?
+      description: Havola, log yoki avval sinab ko‘rgan qadamlaringizni qo‘shing.

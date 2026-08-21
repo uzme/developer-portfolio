@@ -1,0 +1,23 @@
+name: Feature request
+description: Portfolio, loyiha yoki avtomatlashtirish uchun taklif yuboring.
+title: "[Feature]: "
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Qaysi muammoni hal qiladi?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Taklif etilayotgan yechim
+      description: Funksiya qanday ishlashini tasvirlang.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Muqobil variantlar
+      description: Ko‘rib chiqilgan boshqa yechimlar bo‘lsa, yozing.
