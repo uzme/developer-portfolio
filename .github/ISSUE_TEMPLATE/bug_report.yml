@@ -1,0 +1,38 @@
+name: Bug report
+description: Reproducible product or documentation issue haqida xabar bering.
+title: "[Bug]: "
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: Xabar uchun rahmat. Muammoni qayta tiklash mumkin bo‘lishi uchun quyidagilarni to‘ldiring.
+  - type: textarea
+    id: summary
+    attributes:
+      label: Muammo tavsifi
+      description: Nima noto‘g‘ri ishladi?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Qayta tiklash qadamlari
+      placeholder: "1. …\n2. …\n3. …"
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Kutilgan va amaldagi natija
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Muhit
+      description: Qurilma, brauzer, operatsion tizim yoki Python/Node versiyasi.
+  - type: textarea
+    id: context
+    attributes:
+      label: Qo‘shimcha ma’lumot
+      description: Log yoki screenshotni qo‘shing. Maxfiy ma’lumotlarni kiritmang.
