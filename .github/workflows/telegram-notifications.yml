@@ -1,0 +1,113 @@
+name: Project Telegram Notifications
+
+on:
+  workflow_run:
+    workflows: ["CI", "Python CI", "CodeQL Security Scan"]
+    types: [completed]
+  deployment_status:
+  issues:
+    types: [opened]
+  workflow_dispatch:
+    inputs:
+      message:
+        description: Telegramga yuboriladigan test xabari
+        required: true
+        default: "Developer Portfolio notification tizimi faol."
+        type: string
+
+permissions:
+  contents: read
+  issues: write
+
+env:
+  TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+  TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+
+jobs:
+  notify-ci-failure:
+    if: >-
+      github.event_name == 'workflow_run' &&
+      github.event.workflow_run.head_branch == github.event.repository.default_branch &&
+      github.event.workflow_run.conclusion == 'failure'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Send CI failure notification when configured
+        run: |
+          if [ -z "${TELEGRAM_BOT_TOKEN}" ] || [ -z "${TELEGRAM_CHAT_ID}" ]; then
+            echo "::notice::Telegram secrets are not configured; no external message was sent."
+            exit 0
+          fi
+          curl --fail --silent --show-error --retry 3 \
+            --data-urlencode "chat_id=${TELEGRAM_CHAT_ID}" \
+            --data-urlencode "text=CI xatosi: ${GITHUB_REPOSITORY} — ${WORKFLOW_NAME} (${BRANCH}). ${RUN_URL}" \
+            "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage"
+        env:
+          WORKFLOW_NAME: ${{ github.event.workflow_run.name }}
+          BRANCH: ${{ github.event.workflow_run.head_branch }}
+          RUN_URL: ${{ github.event.workflow_run.html_url }}
+
+  notify-production-deploy:
+    if: >-
+      github.event_name == 'deployment_status' &&
+      github.event.deployment_status.state == 'success' &&
+      (github.event.deployment.environment == 'production' || github.event.deployment.environment == 'Production')
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Send production deployment notification when configured
+        run: |
+          if [ -z "${TELEGRAM_BOT_TOKEN}" ] || [ -z "${TELEGRAM_CHAT_ID}" ]; then
+            echo "::notice::Telegram secrets are not configured; no external message was sent."
+            exit 0
+          fi
+          curl --fail --silent --show-error --retry 3 \
+            --data-urlencode "chat_id=${TELEGRAM_CHAT_ID}" \
+            --data-urlencode "text=Deploy muvaffaqiyatli: ${GITHUB_REPOSITORY} — ${DEPLOYMENT_URL}" \
+            "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage"
+        env:
+          DEPLOYMENT_URL: ${{ github.event.deployment_status.environment_url || github.event.deployment_status.target_url || github.server_url }}
+
+  label-new-issue:
+    if: github.event_name == 'issues'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Apply one practical label to a new issue
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const text = [context.payload.issue.title, context.payload.issue.body || ""].join(" ").toLowerCase();
+            const rules = [
+              [/(bug|error|xato|crash|broken|not work|ishlamay)/, "bug"],
+              [/(doc|readme|documentation|hujjat)/, "documentation"],
+              [/(question|savol|how to|qanday)/, "question"],
+              [/(feature|enhancement|request|taklif|qo'sh)/, "enhancement"],
+            ];
+            const match = rules.find(([pattern]) => pattern.test(text));
+            if (!match) return core.notice("No deterministic label matched this issue.");
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              labels: [match[1]],
+            });
+            core.notice(`Applied ${match[1]} label.`);
+
+  send-manual-test:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Send manual test when configured
+        run: |
+          if [ -z "${TELEGRAM_BOT_TOKEN}" ] || [ -z "${TELEGRAM_CHAT_ID}" ]; then
+            echo "::notice::Telegram secrets are not configured; no external message was sent."
+            exit 0
+          fi
+          curl --fail --silent --show-error --retry 3 \
+            --data-urlencode "chat_id=${TELEGRAM_CHAT_ID}" \
+            --data-urlencode "text=${MESSAGE}" \
+            "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage"
+        env:
+          MESSAGE: ${{ inputs.message }}
