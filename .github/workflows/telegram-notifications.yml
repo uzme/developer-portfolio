@@ -74,7 +74,7 @@ jobs:
     timeout-minutes: 5
     steps:
       - name: Apply one practical label to a new issue
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         with:
           script: |
             const text = [context.payload.issue.title, context.payload.issue.body || ""].join(" ").toLowerCase();
