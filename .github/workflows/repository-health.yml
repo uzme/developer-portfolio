@@ -1,0 +1,114 @@
+name: Repository Health Monitoring
+
+on:
+  schedule:
+    - cron: "22 6 * * 1"
+  workflow_dispatch:
+
+permissions:
+  actions: read
+  contents: read
+  pull-requests: read
+  security-events: read
+
+env:
+  EXPECTED_OPEN_CODE_SCANNING_ALERTS: "0"
+
+jobs:
+  audit:
+    name: Weekly CI and security health audit
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Collect read-only repository health data
+        id: health
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const expectedOpenCodeScanningAlerts = Number(process.env.EXPECTED_OPEN_CODE_SCANNING_ALERTS || "0");
+            const concerningConclusions = new Set(["failure", "cancelled", "timed_out", "action_required", "startup_failure"]);
+            const unavailable = (label, error) => {
+              core.notice(`${label} metric was unavailable: ${error.status || error.message}`);
+              return { available: false, count: null };
+            };
+
+            const { data: repository } = await github.rest.repos.get({ owner, repo });
+            const { data: pullRequests } = await github.rest.pulls.list({ owner, repo, state: "open", per_page: 100 });
+            const { data: workflowRuns } = await github.rest.actions.listWorkflowRunsForRepo({ owner, repo, branch: repository.default_branch, per_page: 100 });
+
+            const latestByWorkflow = new Map();
+            for (const run of workflowRuns.workflow_runs) {
+              if (run.event === "pull_request" || latestByWorkflow.has(run.name)) continue;
+              latestByWorkflow.set(run.name, run);
+            }
+            const latestRuns = [...latestByWorkflow.values()];
+            const workflowSummary = latestRuns.length
+              ? latestRuns.map((run) => `${run.name}: ${run.conclusion || run.status}`).join("; ")
+              : "default branch uchun workflow run topilmadi";
+            const failingWorkflows = latestRuns.filter((run) => concerningConclusions.has(run.conclusion));
+
+            let codeScanning;
+            try {
+              const response = await github.rest.codeScanning.listAlertsForRepo({ owner, repo, state: "open", per_page: 100 });
+              codeScanning = { available: true, count: response.data.length };
+            } catch (error) {
+              codeScanning = unavailable("Code scanning", error);
+            }
+
+            let dependabot;
+            try {
+              const response = await github.rest.dependabot.listAlertsForRepo({ owner, repo, state: "open", per_page: 100 });
+              dependabot = { available: true, count: response.data.length };
+            } catch (error) {
+              dependabot = unavailable("Dependabot", error);
+            }
+
+            const newCodeScanningAlerts = codeScanning.available
+              ? Math.max(codeScanning.count - expectedOpenCodeScanningAlerts, 0)
+              : 0;
+            const needsAttention = failingWorkflows.length > 0 || newCodeScanningAlerts > 0 || (dependabot.available && dependabot.count > 0);
+            const codeScanningText = codeScanning.available
+              ? `${codeScanning.count} open${expectedOpenCodeScanningAlerts ? ` (${expectedOpenCodeScanningAlerts} known verified item excluded from alerting)` : ""}`
+              : "API ruxsati mavjud emas";
+            const dependabotText = dependabot.available ? `${dependabot.count} open` : "API ruxsati mavjud emas";
+            const status = needsAttention ? "DIQQAT TALAB QILADI" : "YAXSHI";
+            const message = [
+              `Repository health — ${owner}/${repo}`,
+              `Holat: ${status}`,
+              `Branch: ${repository.default_branch}`,
+              `So‘nggi workflowlar: ${workflowSummary}`,
+              `Ochiq PR: ${pullRequests.length}`,
+              `Code scanning: ${codeScanningText}`,
+              `Dependabot: ${dependabotText}`,
+              `Run: ${context.serverUrl}/${owner}/${repo}/actions/runs/${context.runId}`,
+            ].join("\n");
+
+            await core.summary
+              .addHeading("Repository health audit")
+              .addTable([
+                [{ data: "Metric", header: true }, { data: "Status", header: true }],
+                ["Latest workflows", workflowSummary],
+                ["Open pull requests", String(pullRequests.length)],
+                ["Open code-scanning alerts", codeScanningText],
+                ["Open Dependabot alerts", dependabotText],
+                ["Overall", status],
+              ])
+              .write();
+            core.setOutput("message", message);
+
+      - name: Send weekly Telegram summary when configured
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          MESSAGE: ${{ steps.health.outputs.message }}
+        run: |
+          if [ -z "${TELEGRAM_BOT_TOKEN}" ] || [ -z "${TELEGRAM_CHAT_ID}" ]; then
+            echo "::notice::Telegram secrets are not configured; no external message was sent."
+            exit 0
+          fi
+          curl --fail --silent --show-error --retry 3 \
+            --data-urlencode "chat_id=${TELEGRAM_CHAT_ID}" \
+            --data-urlencode "text=${MESSAGE}" \
+            "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage"
