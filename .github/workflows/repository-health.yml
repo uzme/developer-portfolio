@@ -22,7 +22,7 @@ jobs:
     steps:
       - name: Collect read-only repository health data
         id: health
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         with:
           script: |
             const owner = context.repo.owner;
