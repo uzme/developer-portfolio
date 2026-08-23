@@ -44,10 +44,12 @@ jobs:
               latestByWorkflow.set(run.name, run);
             }
             const latestRuns = [...latestByWorkflow.values()];
-            const workflowSummary = latestRuns.length
-              ? latestRuns.map((run) => `${run.name}: ${run.conclusion || run.status}`).join("; ")
-              : "default branch uchun workflow run topilmadi";
             const failingWorkflows = latestRuns.filter((run) => concerningConclusions.has(run.conclusion));
+            const workflowSummary = latestRuns.length
+              ? failingWorkflows.length
+                ? `${latestRuns.length} ta main workflowdan ${failingWorkflows.length} tasi xatoli: ${failingWorkflows.slice(0, 3).map((run) => run.name).join(", ")}`
+                : `${latestRuns.length} ta main workflow tekshirildi, xato yo‘q`
+              : "default branch uchun workflow run topilmadi";
 
             let codeScanning;
             try {
